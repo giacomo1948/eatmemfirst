@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EatMeFirst - Scanner Remoto</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #111; color: #fff; margin:0; padding:20px; text-align: center; }
+        h2 { font-size: 1.3rem; margin-bottom: 10px; }
+        .scan-box { background: #222; border: 2px dashed #444; padding: 25px 15px; border-radius: 12px; margin-top: 20px; }
+        .btn-camera { background: #386641; color: white; border: none; padding: 16px 20px; font-weight: bold; border-radius: 8px; font-size: 1rem; cursor: pointer; display: inline-block; width: 100%; max-width: 300px; }
+        .scanned-card { background: #222; border: 1px solid #444; padding: 15px; border-radius: 8px; margin-top: 20px; text-align: left; display: none; }
+        .scanned-card img { width: 60px; height: 60px; object-fit: contain; background: #fff; border-radius: 4px; float: left; margin-right: 12px; }
+        .btn-confirm { background: #386641; color: white; border: none; padding: 12px; width: 100%; font-weight: bold; border-radius: 6px; margin-top: 15px; font-size: 1rem; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h2>Scanner Spesa Mobile</h2>
+    <p style="font-size: 0.85rem; color: #aaa;">Inquadra il codice a barre del prodotto</p>
+
+    <div class="scan-box">
+        <input type="file" id="qr-input-file" accept="image/*" capture="environment" style="display:none;" onchange="scansionaFile(event)">
+        <button class="btn-camera" onclick="document.getElementById('qr-input-file').click();">📷 Scatta / Inquadra Barcode</button>
+    </div>
+
+    <div id="loading" style="color: #f4a261; margin-top: 15px; display:none;">Ricerca dettagli prodotto...</div>
+
+    <div id="scannedCard" class="scanned-card">
+        <img id="scannedImg" src="" alt="">
+        <div style="font-weight: bold; font-size: 0.95rem;" id="scannedName"></div>
+        <div style="font-size: 0.75rem; color: #aaa; margin-top: 4px;" id="scannedDesc"></div>
+        <div style="clear: both;"></div>
+        <button class="btn-confirm" onclick="inviaAlPC()">Invia al PC 🚀</button>
+    </div>
+
+    <script>
+        // Configurazione Firebase condivisa per il progetto EatMeFirst
+        const firebaseConfig = {
+            databaseURL: "https://eatmemefirst-sync-default-rtdb.europe-west1.firebasedatabase.app/"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        let prodottoCorrente = null;
+
+        function scansionaFile(e) {
+            if (e.target.files.length === 0) return;
+            const imageFile = e.target.files[0];
+            
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('scannedCard').style.display = 'none';
+
+            const html5QrCode = new Html5Qrcode("qr-input-file");
+            html5QrCode.scanFile(imageFile, true)
+                .then(decodedText => {
+                    document.getElementById('loading').style.display = 'none';
+                    cercaProdottoOpenFoodFacts(decodedText);
+                })
+                .catch(err => {
+                    document.getElementById('loading').style.display = 'none';
+                    alert("Impossibile leggere il codice a barre. Assicurati che sia ben illuminato.");
+                });
+        }
+
+        function cercaProdottoOpenFoodFacts(barcode) {
+            document.getElementById('loading').style.display = 'block';
+            fetch(`https://world.openfoodfacts.org/api/v0/product/${barcode}.json`)
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('loading').style.display = 'none';
+                    if (data.status === 1 && data.product) {
+                        const p = data.product;
+                        const nome = p.product_name_it || p.product_name || barcode;
+                        const marca = p.brands ? `Marca: ${p.brands}` : '';
+                        const quantitaConf = p.quantity ? `Quantità: ${p.quantity}` : '';
+                        const ingredienti = p.ingredients_text_it ? `Ingredienti: ${p.ingredients_text_it.substring(0, 120)}...` : '';
+                        
+                        prodottoCorrente = {
+                            nome: `${nome} ${p.brands ? '('+p.brands+')':''}`,
+                            immagine: p.image_front_small_url || p.image_url || '',
+                            descrizioneCompleta: [marca, quantitaConf, ingredienti].filter(Boolean).join(' | ')
+                        };
+
+                        document.getElementById('scannedImg').src = prodottoCorrente.immagine;
+                        document.getElementById('scannedName').textContent = prodottoCorrente.nome;
+                        document.getElementById('scannedDesc').textContent = prodottoCorrente.descrizioneCompleta;
+                        document.getElementById('scannedCard').style.display = 'block';
+                    } else {
+                        alert("Codice " + barcode + " non trovato nel database.");
+                    }
+                })
+                .catch(err => {
+                    document.getElementById('loading').style.display = 'none';
+                    alert("Errore di connessione al database.");
+                });
+        }
+
+        function inviaAlPC() {
+            if(!prodottoCorrente) return;
+            
+            // Salvataggio nel database in tempo reale sul cloud
+            db.ref('prodottoInArrivo').set({
+                ...prodottoCorrente,
+                timestamp: Date.now()
+            }).then(() => {
+                alert("Inviato al portatile con successo!");
+                document.getElementById('scannedCard').style.display = 'none';
+                prodottoCorrente = null;
+            }).catch(error => {
+                alert("Errore di invio: " + error.message);
+            });
+        }
+    </script>
+</body>
+</html>

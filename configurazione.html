@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EatMeFirst - Configurazione Famiglia e Ubicazioni</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1f3a40;
+            --accent-color: #386641;
+            --card-bg: #ffffff;
+            --text-color: #2b3e42;
+            --border-color: #cbd5e1;
+        }
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f6f5;
+            background-image: linear-gradient(135deg, #f4f6f5 0%, #e2e8f0 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #1f3a40 0%, #2c4a52 100%);
+            color: #ffffff;
+            padding: 25px 30px;
+        }
+        .header h1 {
+            margin: 0;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+        }
+        .content {
+            padding: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 6px;
+            color: var(--primary-color);
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+        .ubicazioni-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .ubicazione-tag {
+            background: #eef2f6;
+            border: 1px solid var(--border-color);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .ubicazione-tag button {
+            background: none;
+            border: none;
+            color: #bc4749;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        .btn-add {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-top: 8px;
+        }
+        .btn-save {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1rem;
+            margin-top: 20px;
+        }
+        .btn-save:hover { background-color: #2d5034; }
+        .nav-links {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .nav-links a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h1>Configurazione Iniziale</h1>
+            <p style="margin: 5px 0 0 0; opacity: 0.85; font-size: 0.9rem;">Imposta i componenti della famiglia, la lingua e le ubicazioni di casa</p>
+        </div>
+
+        <div class="content">
+            <form id="configForm" onsubmit="salvaConfigurazione(event)">
+                <div class="form-group">
+                    <label>Lingua dell'Interfaccia</label>
+                    <select id="linguaApp">
+                        <option value="it">Italiano</option>
+                        <option value="en">English</option>
+                        <option value="es">Español</option>
+                        <option value="fr">Français</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Composizione Nucleo Familiare (per previsione consumi)</label>
+                    <div class="grid-3">
+                        <div>
+                            <label style="font-size: 0.8rem; color:#64748b;">Adulti</label>
+                            <input type="number" id="adulti" min="1" value="2" required>
+                        </div>
+                        <div>
+                            <label style="font-size: 0.8rem; color:#64748b;">Bambini</label>
+                            <input type="number" id="bambini" min="0" value="0" required>
+                        </div>
+                        <div>
+                            <label style="font-size: 0.8rem; color:#64748b;">Anziani</label>
+                            <input type="number" id="anziani" min="0" value="0" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Ubicazioni di Conservazione</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="nuovaUbicazioneInput" placeholder="Nuova ubicazione (es. Cantina, Dispensa alta)...">
+                        <button type="button" class="btn-add" onclick="aggiungiUbicazioneLista()">Aggiungi</button>
+                    </div>
+                    <div id="ubicazioniContainer" class="ubicazioni-list"></div>
+                </div>
+
+                <button type="submit" class="btn-save">Salva e Vai all'Inventario →</button>
+            </form>
+
+            <div class="nav-links">
+                <a href="inventario.html">Vai direttamente all'Inventario Principale</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let datiConfig = JSON.parse(localStorage.getItem('eatMeFirst_famiglia')) || {
+            adulti: 2,
+            bambini: 0,
+            anziani: 0,
+            lingua: 'it',
+            ubicazioni: ["Frigo", "Freezer", "Dispensa", "Cantina"]
+        };
+
+        document.getElementById('adulti').value = datiConfig.adulti;
+        document.getElementById('bambini').value = datiConfig.bambini;
+        document.getElementById('anziani').value = datiConfig.anziani;
+        document.getElementById('linguaApp').value = datiConfig.lingua || 'it';
+
+        function renderUbicazioni() {
+            const container = document.getElementById('ubicazioniContainer');
+            container.innerHTML = '';
+            datiConfig.ubicazioni.forEach((ubi, index) => {
+                const tag = document.createElement('div');
+                tag.className = 'ubicazione-tag';
+                tag.innerHTML = `<span>${ubi}</span> <button type="button" onclick="rimuoviUbicazione(${index})">&times;</button>`;
+                container.appendChild(tag);
+            });
+        }
+
+        function aggiungiUbicazioneLista() {
+            const input = document.getElementById('nuovaUbicazioneInput');
+            const val = input.value.trim();
+            if(val && !datiConfig.ubicazioni.includes(val)) {
+                datiConfig.ubicazioni.push(val);
+                input.value = '';
+                renderUbicazioni();
+            }
+        }
+
+        function rimuoviUbicazione(index) {
+            if(datiConfig.ubicazioni.length <= 1) {
+                alert("Devi mantenere almeno un'ubicazione.");
+                return;
+            }
+            datiConfig.ubicazioni.splice(index, 1);
+            renderUbicazioni();
+        }
+
+        function salvaConfigurazione(e) {
+            e.preventDefault();
+            datiConfig.adulti = document.getElementById('adulti').value;
+            datiConfig.bambini = document.getElementById('bambini').value;
+            datiConfig.anziani = document.getElementById('anziani').value;
+            datiConfig.lingua = document.getElementById('linguaApp').value;
+
+            localStorage.setItem('eatMeFirst_famiglia', JSON.stringify(datiConfig));
+            window.location.href = 'inventario.html';
+        }
+
+        renderUbicazioni();
+    </script>
+</body>
+</html>

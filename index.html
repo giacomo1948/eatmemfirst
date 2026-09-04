@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EatMeFirst - Dispensa Intelligente</title>
+    <!-- Libreria per la scansione di Barcode e QR Code via browser -->
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <style>
+        :root {
+            --primary: #2e7d32;
+            --primary-dark: #1b5e20;
+            --bg: #ffffff;
+            --text: #333333;
+            --border: #dddddd;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: var(--bg);
+        }
+
+        .fullscreen-page {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #ffffff;
+            z-index: 2500;
+            overflow-y: auto;
+            padding: 40px 20px;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .fullscreen-page.active {
+            display: flex;
+        }
+
+        /* --- PAGINA 1: COPERTINA --- */
+        #page-cover {
+            background-image: url('copertina.png');
+            background-size: cover;
+            background-position: center;
+            padding: 0;
+        }
+
+        .app-title {
+            position: absolute;
+            top: 25px;
+            left: 25px;
+            color: #ffffff;
+            font-size: 2.2rem;
+            font-weight: bold;
+            text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.9);
+            z-index: 2;
+        }
+
+        .cover-text {
+            position: absolute;
+            top: 58%;
+            right: 30px;
+            width: 320px;
+            text-align: left;
+            z-index: 2;
+        }
+
+        .cover-text .line1 {
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: #ffffff;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.95);
+            margin-bottom: 8px;
+        }
+
+        .cover-text .line2 {
+            font-size: 1.15rem;
+            font-weight: bold;
+            color: #ffffff;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.95);
+            line-height: 1.4;
+        }
+
+        .cover-btn {
+            position: absolute;
+            bottom: 30px;
+            left: 25px;
+            z-index: 2;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .cover-btn:hover { background-color: var(--primary-dark); }
+
+        /* --- CONTENUTI COMUNI DELLE SCHEDE --- */
+        .content-card {
+            width: 100%;
+            max-width: 550px;
+            text-align: left;
+            background: #ffffff;
+            padding: 20px;
+        }
+
+        h2 { color: var(--primary); font-size: 1.5rem; margin-bottom: 15px; }
+        p { font-size: 0.95rem; color: var(--text); line-height: 1.6; margin-bottom: 15px; }
+
+        .link-detail {
+            color: var(--primary);
+            font-weight: bold;
+            text-decoration: underline;
+            cursor: pointer;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .checkbox-container {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            margin-bottom: 25px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .checkbox-container input { margin-top: 4px; width: 18px; height: 18px; cursor: pointer; }
+        .checkbox-container label { font-size: 0.9rem; color: var(--text); cursor: pointer; }
+
+        .btn-group { display: flex; gap: 15px; }
+        .btn { flex: 1; padding: 12px; border-radius: 6px; font-size: 1rem; font-weight: bold; border: none; cursor: pointer; }
+        .btn-primary { background-color: var(--primary); color: white; }
+        .btn-primary:disabled { background-color: #cccccc; cursor: not-allowed; }
+        .btn-secondary { background-color: #e0e0e0; color: #333333; }
+        .btn-primary:hover:not(:disabled) { background-color: var(--primary-dark); }
+        .btn-secondary:hover { background-color: #d0d0d0; }
+
+        /* --- PAGINA FAMIGLIA --- */
+        #page-family-intro {
+            background-image: url('famiglia.jpg');
+            background-size: cover;
+            background-position: center;
+            padding: 0;
+        }
+
+        .family-top-btn {
+            position: absolute;
+            top: 25px;
+            right: 25px;
+            z-index: 3;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+        }
+
+        .family-bottom-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100vw;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(4px);
+            padding: 25px 40px;
+            color: #ffffff;
+            z-index: 2;
+            text-align: left;
+        }
+
+        .family-bottom-bar h2 { color: #81c784; font-size: 1.4rem; margin-bottom: 8px; }
+        .family-bottom-bar p { font-size: 0.95rem; color: #f1f1f1; line-height: 1.5; margin: 0; }
+
+        .family-form-group { margin-bottom: 20px; }
+        .family-form-group label { display: block; font-weight: bold; margin-bottom: 8px; color: var(--text); }
+        .family-form-group input { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 1rem; }
+
+        /* --- DASHBOARD --- */
+        #page-dashboard {
+            background-image: url('copertina.png');
+            background-size: cover;
+            background-position: center;
+            padding: 20px;
+            justify-content: flex-start;
+            align-items: flex-start;
+        }
+
+        .dash-header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            z-index: 2;
+            margin-bottom: 35px;
+        }
+
+        .dash-app-title { color: #ffffff; font-size: 2.2rem; font-weight: bold; text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.9); }
+
+        .dash-menu-icon {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #ffffff;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            backdrop-filter: blur(4px);
+        }
+
+        .dash-main-layout { display: flex; align-items: flex-start; gap: 12px; z-index: 2; margin-top: 15px; }
+
+        .master-traffic-light {
+            background: rgba(20, 20, 20, 0.85);
+            backdrop-filter: blur(4px);
+            padding: 8px;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: center;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            width: 40px;
+            height: 185px;
+            flex-shrink: 0;
+        }
+
+        .master-bulb { width: 20px; height: 20px; border-radius: 50%; background-color: #2a2a2a; }
+        .master-bulb.green-on { background-color: #4caf50; box-shadow: 0 0 12px #4caf50; }
+
+        .dash-buttons-column { display: flex; flex-direction: column; gap: 10px; }
+        .dash-soft-btn {
+            background: rgba(255, 243, 205, 0.9);
+            border: 1px solid rgba(180, 150, 80, 0.4);
+            color: #3d2c00;
+            padding: 9px 14px;
+            border-radius: 6px;
+            font-size: 0.88rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: left;
+            width: 210px;
+            height: 51px;
+            display: flex;
+            align-items: center;
+        }
+
+        .dash-soft-btn.action-load {
+            background: rgba(212, 237, 218, 0.9);
+            border-color: rgba(46, 125, 50, 0.4);
+            color: #155724;
+            width: 210px;
+            height: 42px;
+            margin-top: 5px;
+        }
+
+        /* --- PAGINA CARICO MERCI (SPESA.PNG) --- */
+        #page-load-goods {
+            background-image: url('spesa.png');
+            background-size: cover;
+            background-position: center;
+            padding: 20px;
+            justify-content: flex-start;
+            align-items: flex-start;
+        }
+
+        .load-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 15px;
+            z-index: 2;
+            margin-top: 30px;
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .scan-action-btn {
+            background: rgba(46, 125, 50, 0.9);
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            color: white;
+            padding: 14px 20px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+            width: 240px;
+        }
+
+        .scan-action-btn:hover { background: rgba(27, 94, 32, 0.98); }
+
+        /* Contenitore della fotocamera e della tabella dati a comparsa */
+        #scanner-section {
+            display: none;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--border);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            margin-top: 10px;
+        }
+
+        #scanner-section.active { display: block; }
+
+        #reader {
+            width: 100%;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 12px;
+            background: #000;
+        }
+
+        /* Layout flessibile per i dati e l'immagine prodotto sulla destra */
+        .product-result-grid {
+            display: flex;
+            gap: 15px;
+            align-items: flex-start;
+        }
+
+        .product-form-fields {
+            flex: 1;
+        }
+
+        .product-image-preview {
+            width: 110px;
+            height: 110px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 0.75rem;
+            color: #777;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .form-row { margin-bottom: 10px; }
+        .form-row label { display: block; font-size: 0.8rem; font-weight: bold; color: var(--text); margin-bottom: 3px; }
+        .form-row input, .form-row textarea { width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 4px; font-size: 0.88rem; }
+        
+        .expiry-buttons { display: flex; gap: 8px; margin-top: 5px; }
+        .expiry-btn { flex: 1; padding: 8px; border: none; border-radius: 4px; font-size: 0.8rem; font-weight: bold; cursor: pointer; color: white; }
+        .btn-tassativa { background-color: #d32f2f; }
+        .btn-consigliata { background-color: #fbc02d; color: #333; }
+        .notice-text { font-size: 0.75rem; color: #666; font-style: italic; margin-top: 6px; line-height: 1.3; }
+    </style>
+</head>
+<body>
+
+    <!-- PAGINA 1: COPERTINA -->
+    <div id="page-cover" class="fullscreen-page active">
+        <div class="app-title">EatMeFirst</div>
+        <div class="cover-text">
+            <div class="line1">seguimi e...</div>
+            <div class="line2">non ti troverai più in questa situazione!</div>
+        </div>
+        <button class="cover-btn" onclick="goToPage('page-terms')">Continua</button>
+    </div>
+
+    <!-- PAGINA 2: TERMINI D'USO -->
+    <div id="page-terms" class="fullscreen-page">
+        <div class="content-card">
+            <h2>Termini d'Uso, Privacy & Brevetto</h2>
+            <p>EatMeFirst è uno strumento di supporto per la gestione della dispensa in locale.</p>
+            <span class="link-detail" onclick="goToPage('page-details')">📖 Leggi i dettagli completi &raquo;</span>
+            <div class="checkbox-container">
+                <input type="checkbox" id="accept-terms" onchange="toggleAccept()">
+                <label for="accept-terms">Accetto i termini d'uso e la gestione locale dei dati.</label>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-secondary" onclick="goToPage('page-cover')">Indietro</button>
+                <button id="btn-next-terms" class="btn btn-primary" onclick="goToPage('page-family-intro')" disabled>Continua</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAGINA 3: DETTAGLI -->
+    <div id="page-details" class="fullscreen-page">
+        <div class="content-card">
+            <h2>Approfondimento</h2>
+            <p>Dettagli sulla responsabilità e sulla gestione esclusiva locale dei dati.</p>
+            <button class="btn btn-primary" onclick="goToPage('page-terms')">Indietro</button>
+        </div>
+    </div>
+
+    <!-- PAGINA 4: INTRO FAMIGLIA -->
+    <div id="page-family-intro" class="fullscreen-page">
+        <div class="app-title">EatMeFirst</div>
+        <button class="family-top-btn" onclick="goToPage('page-family-form')">Continua &raquo;</button>
+        <div class="family-bottom-bar">
+            <h2>Il tuo nucleo familiare</h2>
+            <p>I dati servono solo a calcolare i consumi per evitare sprechi sul tuo dispositivo.</p>
+        </div>
+    </div>
+
+    <!-- PAGINA 5: FORM FAMIGLIA -->
+    <div id="page-family-form" class="fullscreen-page">
+        <div class="content-card">
+            <h2>Composizione del Nucleo Familiare</h2>
+            <div class="family-form-group">
+                <label>Numero Adulti:</label>
+                <input type="number" id="adults-count" min="1" value="2">
+            </div>
+            <div class="family-form-group">
+                <label>Numero Bambini:</label>
+                <input type="number" id="kids-count" min="0" value="0">
+            </div>
+            <div class="btn-group" style="margin-top: 25px;">
+                <button class="btn btn-secondary" onclick="goToPage('page-family-intro')">Indietro</button>
+                <button class="btn btn-primary" onclick="completeSetup()">Salva e Accedi</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAGINA 6: DASHBOARD -->
+    <div id="page-dashboard" class="fullscreen-page">
+        <div class="dash-header-top">
+            <div class="dash-app-title">EatMeFirst</div>
+            <button class="dash-menu-icon" onclick="alert('Menu principale')">☰ Menu</button>
+        </div>
+        <div class="dash-main-layout">
+            <div class="master-traffic-light">
+                <div class="master-bulb green-on"></div>
+                <div class="master-bulb"></div>
+                <div class="master-bulb"></div>
+            </div>
+            <div class="dash-buttons-column">
+                <button class="dash-soft-btn" onclick="alert('Dispensa')">Merci in dispensa</button>
+                <button class="dash-soft-btn" onclick="alert('Scadenza consigliata')">Scadenza consigliata</button>
+                <button class="dash-soft-btn" onclick="alert('Scadenza tassativa')">Scadenza tassativa</button>
+                <button class="dash-soft-btn action-load" onclick="goToPage('page-load-goods')">➕ Carico merci</button>
+                <button class="dash-soft-btn" onclick="alert('Scarico')">➖ Scarico merci</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAGINA 7: CARICO MERCI CON SCANNER DINAMICO -->
+    <div id="page-load-goods" class="fullscreen-page">
+        <div class="dash-header-top">
+            <div class="dash-app-title">EatMeFirst</div>
+            <button class="dash-menu-icon" onclick="alert('Menu principale')">☰ Menu</button>
+        </div>
+
+        <div class="load-container">
+            <!-- Pulsante di avvio scansione -->
+            <button class="scan-action-btn" id="btn-start-scan" onclick="startScanner()">
+                📷 Scansiona codice a barre
+            </button>
+
+            <!-- Sezione che compare solo dopo aver attivato la scansione -->
+            <div id="scanner-section">
+                <!-- Box video della fotocamera per leggere Barcode / QR -->
+                <div id="reader"></div>
+
+                <div class="product-result-grid">
+                    <div class="product-form-fields">
+                        <div class="form-row">
+                            <label>Codice Rilevato:</label>
+                            <input type="text" id="detected-code" readonly style="background: #e9ecef; font-weight: bold;">
+                        </div>
+
+                        <!-- Area dinamica per la descrizione (se non trovata, appare il campo di inserimento) -->
+                        <div class="form-row" id="desc-container">
+                            <!-- Qui apparirà dinamicamente la descrizione o la richiesta di input manuale -->
+                        </div>
+
+                        <div class="form-row">
+                            <label>Quantità:</label>
+                            <input type="number" id="prod-qty" value="1" min="1">
+                        </div>
+                    </div>
+
+                    <!-- Anteprima immagine prodotto sulla destra -->
+                    <div>
+                        <label style="font-size: 0.8rem; font-weight: bold; margin-bottom: 3px; display: block;">Immagine:</label>
+                        <img id="product-img-preview" class="product-image-preview" src="" alt="Foto prodotto" style="display:none;">
+                        <div id="no-image-placeholder" class="product-image-preview">Nessuna immagine</div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <label>Registra Scadenza:</label>
+                    <div class="expiry-buttons">
+                        <button class="expiry-btn btn-tassativa" onclick="alert('Salvato con scadenza tassativa')">Tassativa</button>
+                        <button class="expiry-btn btn-consigliata" onclick="alert('Salvato con scadenza consigliata')">Consigliata</button>
+                    </div>
+                    <div class="notice-text">Nota: Se hai prodotti identici ma con scadenze diverse, fai inserimenti separati.</div>
+                </div>
+
+                <div class="form-row" style="margin-top: 10px; border-top: 1px solid #eee; padding-top: 8px;">
+                    <label>Nota Evento Speciale:</label>
+                    <textarea rows="2" placeholder="Acquisto per evento... data... avvisare... giorni prima"></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let html5QrCode = null;
+
+        window.onload = function() {
+            const isSetupDone = localStorage.getItem('eatMeFirst_setupDone');
+            if (isSetupDone === 'true') {
+                goToPage('page-dashboard');
+            }
+        };
+
+        function goToPage(pageId) {
+            // Se usciamo dalla pagina di carico, fermiamo la fotocamera se attiva
+            if(pageId !== 'page-load-goods' && html5QrCode) {
+                html5QrCode.stop().catch(err => console.log(err));
+            }
+            document.querySelectorAll('.fullscreen-page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(pageId).classList.add('active');
+        }
+
+        function toggleAccept() {
+            const checkbox = document.getElementById('accept-terms');
+            document.getElementById('btn-next-terms').disabled = !checkbox.checked;
+        }
+
+        function completeSetup() {
+            localStorage.setItem('eatMeFirst_setupDone', 'true');
+            goToPage('page-dashboard');
+        }
+
+        // Avvio dello scanner per Barcode e QR Code
+        function startScanner() {
+            const section = document.getElementById('scanner-section');
+            section.classList.add('active');
+            document.getElementById('btn-start-scan').style.display = 'none';
+
+            if (!html5QrCode) {
+                html5QrCode = new Html5Qrcode("reader");
+            }
+
+            const config = { fps: 10, qrbox: { width: 250, height: 100 } };
+
+            // Avvia la fotocamera posteriore (environment) se disponibile
+            html5QrCode.start(
+                { facingMode: "environment" }, 
+                config, 
+                onScanSuccess,
+                onScanFailure
+            ).catch(err => {
+                console.error("Errore attivazione fotocamera:", err);
+                // Fallback se la fotocamera non parte (es. su alcuni PC senza webcam)
+                document.getElementById('reader').innerHTML = "<div style='padding:20px; color:#fff; text-align:center;'>Fotocamera non disponibile. Simula scansione inserendo un codice di test.</div>";
+                // Simuliamo un codice trovato per testare la comparsa dei campi
+                onScanSuccess("8001505001110 (Test Barcode)");
+            });
+        }
+
+        function onScanSuccess(decodedText, decodedResult) {
+            // Codice rilevato con successo (può essere un Barcode EAN o un QR Code)
+            document.getElementById('detected-code').value = decodedText;
+
+            // Spegniamo la fotocamera dopo la lettura per stabilizzare la schermata
+            if(html5QrCode && html5QrCode.isScanning) {
+                html5QrCode.stop().catch(err => console.log(err));
+            }
+
+            // Simuliamo la ricerca del prodotto nel database
+            processProductLookup(decodedText);
+        }
+
+        function onScanFailure(error) {
+            // Gestione dei tentativi di scansione a vuoto (ignorato per evitare log continui)
+        }
+
+        // Logica dinamica per descrizione e immagine
+        function processProductLookup(code) {
+            const descContainer = document.getElementById('desc-container');
+            const imgPreview = document.getElementById('product-img-preview');
+            const noImgPlaceholder = document.getElementById('no-image-placeholder');
+
+            // Esempio simulato: facciamo finta di cercare il codice
+            let productFound = false; // Metti true se vuoi simulare un prodotto trovato
+
+            if (productFound) {
+                // Caso prodotto trovato nel database
+                descContainer.innerHTML = `
+                    <label>Descrizione Prodotto:</label>
+                    <input type="text" value="Latte Intero Fresco 1L" readonly style="background: #e9ecef;">
+                `;
+                imgPreview.src = "https://via.placeholder.com/110?text=Prodotto";
+                imgPreview.style.display = "block";
+                noImgPlaceholder.style.display = "none";
+            } else {
+                // Caso prodotto NON trovato ->compare la casella "fai tu" come richiesto
+                descContainer.innerHTML = `
+                    <label style="color: #d32f2f;">Descrizione non disponibile (fai tu):</label>
+                    <input type="text" id="manual-desc" placeholder="Inserisci nome prodotto...">
+                `;
+                imgPreview.style.display = "none";
+                noImgPlaceholder.style.display = "flex";
+                noImgPlaceholder.innerText = "Nessuna immagine";
+            }
+        }
+    </script>
+</body>
+</html>

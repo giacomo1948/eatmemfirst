@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EatMeFirst - Inventario e Sincronizzazione Live</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <style>
+        :root {
+            --primary-color: #1f3a40;
+            --accent-color: #386641;
+            --alert-color: #bc4749;
+            --card-bg: #ffffff;
+            --text-color: #2b3e42;
+            --border-color: #cbd5e1;
+        }
+        body { font-family: 'Inter', Arial, sans-serif; color: var(--text-color); margin: 0; padding: 20px; background-color: #f4f6f5; min-height: 100vh; }
+        .container { max-width: 1050px; margin: 0 auto; background: var(--card-bg); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border: 1px solid var(--border-color); overflow: hidden; }
+        .header { background: linear-gradient(135deg, #1f3a40 0%, #2c4a52 100%); color: #ffffff; padding: 25px 30px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .header h1 { margin: 0; font-family: 'Playfair Display', serif; font-size: 1.8rem; }
+        .btn-nav { background: rgba(255, 255, 255, 0.2); color: white; border: 1px solid rgba(255, 255, 255, 0.4); padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; text-decoration: none; }
+        .content { padding: 30px; }
+        .remote-incoming-box { background: #eefdf4; border: 2px dashed var(--accent-color); padding: 15px 20px; border-radius: 8px; margin-bottom: 25px; display: none; align-items: center; justify-content: space-between; animation: pulseGlow 2s infinite; }
+        @keyframes pulseGlow { 0% { border-color: #386641; } 50% { border-color: #6a994e; } 100% { border-color: #386641; } }
+        .form-card { background-color: #f8fafc; border: 1px solid var(--border-color); padding: 20px; border-radius: 8px; margin-bottom: 30px; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 15px; }
+        .input-box label { display: block; font-size: 0.85rem; font-weight: 600; color: #64748b; margin-bottom: 5px; }
+        .input-box input, .input-box select, .input-box textarea { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.95rem; background: #fff; box-sizing: border-box; }
+        .btn-submit { background-color: var(--accent-color); color: white; border: none; padding: 12px 20px; font-weight: 600; border-radius: 6px; cursor: pointer; width: 100%; font-size: 1rem; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border-color); font-size: 0.9rem; vertical-align: middle; }
+        th { background-color: #f1f5f9; color: var(--primary-color); font-weight: 600; }
+        .badge { padding: 4px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; background: #e2e8f0; color: #334155; }
+        .freemium-banner { background: linear-gradient(135deg, #f4a261 0%, #e76f51 100%); color: white; padding: 12px 20px; border-radius: 8px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h1>Inventario Dispensa</h1>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <a href="scanner.html" target="_blank" class="btn-nav">📱 Apri Scanner Smartphone</a>
+                <a href="configurazione.html" class="btn-nav">⚙️ Configurazione</a>
+            </div>
+        </div>
+
+        <div class="content">
+            <!-- Banner Freemium -->
+            <div class="freemium-banner">
+                <div>✨ <strong>Versione Free Attiva:</strong> Passa a <em>PRO</em> per sbloccare la lista spesa intelligente e i report per ubicazione!</div>
+                <button onclick="alert('Funzionalità PRO in arrivo!')" style="background:white; color:#e76f51; border:none; padding:6px 12px; border-radius:4px; font-weight:bold; cursor:pointer;">Passa a PRO</button>
+            </div>
+
+            <!-- Box di ricezione in tempo reale dallo smartphone -->
+            <div id="remoteIncomingBox" class="remote-incoming-box">
+                <div>
+                    <strong style="color: var(--accent-color);">📦 Prodotto ricevuto in tempo reale dallo Smartphone!</strong>
+                    <div id="remoteProdName" style="font-weight: 600; font-size: 1rem; margin-top: 2px;"></div>
+                    <div id="remoteProdDesc" style="font-size: 0.8rem; color: #555; max-width: 500px;"></div>
+                </div>
+                <button onclick="accettaProdottoRemoto()" style="background: var(--accent-color); color: white; border: none; padding: 10px 16px; border-radius: 6px; font-weight: bold; cursor: pointer;">Acquisisci in Dispensa</button>
+            </div>
+
+            <div class="form-card">
+                <h3>Aggiungi Prodotto in Dispensa</h3>
+                <form id="prodottoForm" onsubmit="aggiungiProdotto(event)">
+                    <div class="form-grid">
+                        <div class="input-box">
+                            <label>Nome / Ricerca Prodotto</label>
+                            <input type="text" id="nomeProdotto" placeholder="Es. Pasta, Olio..." required autocomplete="off">
+                        </div>
+                        <div class="input-box">
+                            <label>Quantità</label>
+                            <input type="text" id="quantitaProdotto" value="1 pz" required>
+                        </div>
+                        <div class="input-box">
+                            <label>Ubicazione</label>
+                            <select id="ubicazioneProdotto" required></select>
+                        </div>
+                        <div class="input-box">
+                            <label>Scadenza</label>
+                            <input type="date" id="scadenzaProdotto" required>
+                        </div>
+                    </div>
+                    <div class="input-box" style="margin-bottom: 15px;">
+                        <label>Descrizione Dettagliata / Ingredienti</label>
+                        <textarea id="descrizioneProdotto" rows="2" placeholder="Dettagli e ingredienti..."></textarea>
+                    </div>
+                    <button type="submit" class="btn-submit">+ Registra in Dispensa</button>
+                </form>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h3 style="margin: 0;">Elenco Prodotti</h3>
+                <select id="filtroUbicazione" onchange="renderizzaTabella()" style="padding: 6px 10px; border: 1px solid var(--border-color); border-radius: 6px; background: #fff;">
+                    <option value="Tutti">Tutte le ubicazioni</option>
+                </select>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Prodotto & Dettagli</th>
+                        <th>Quantità</th>
+                        <th>Ubicazione</th>
+                        <th>Scadenza</th>
+                        <th>Stato</th>
+                        <th>Azioni</th>
+                    </tr>
+                </thead>
+                <tbody id="tabellaProdottiBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Configurazione Firebase condivisa
+        const firebaseConfig = {
+            databaseURL: "https://eatmemefirst-sync-default-rtdb.europe-west1.firebasedatabase.app/"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        const famigliaData = JSON.parse(localStorage.getItem('eatMeFirst_famiglia')) || { ubicazioni: ["Frigo", "Freezer", "Dispensa", "Cantina"] };
+        let prodotti = JSON.parse(localStorage.getItem('eatMeFirst_prodotti')) || [];
+        let ultimoProdottoRemoto = null;
+
+        function popolaUbicazioni() {
+            const selectUbi = document.getElementById('ubicazioneProdotto');
+            const filtroUbi = document.getElementById('filtroUbicazione');
+            const ubiList = famigliaData.ubicazioni || ["Frigo", "Freezer", "Dispensa", "Cantina"];
+
+            selectUbi.innerHTML = '';
+            filtroUbi.innerHTML = '<option value="Tutti">Tutte le ubicazioni</option>';
+
+            ubiList.forEach(ubi => {
+                selectUbi.innerHTML += `<option value="${ubi}">${ubi}</option>`;
+                filtroUbi.innerHTML += `<option value="${ubi}">${ubi}</option>`;
+            });
+        }
+
+        // Ascolto in tempo reale dal cloud Firebase
+        db.ref('prodottoInArrivo').on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                ultimoProdottoRemoto = data;
+                document.getElementById('remoteProdName').textContent = data.nome;
+                document.getElementById('remoteProdDesc').textContent = data.descrizioneCompleta;
+                document.getElementById('remoteIncomingBox').style.display = 'flex';
+            }
+        });
+
+        function accettaProdottoRemoto() {
+            if (!ultimoProdottoRemoto) return;
+            document.getElementById('nomeProdotto').value = ultimoProdottoRemoto.nome;
+            document.getElementById('descrizioneProdotto').value = ultimoProdottoRemoto.descrizioneCompleta;
+            window.tempImmagineRemota = ultimoProdottoRemoto.immagine;
+
+            document.getElementById('remoteIncomingBox').style.display = 'none';
+            document.getElementById('scadenzaProdotto').focus();
+
+            // Pulisci il db cloud dopo l'acquisizione
+            db.ref('prodottoInArrivo').remove();
+        }
+
+        function aggiungiProdotto(e) {
+            e.preventDefault();
+            const nuovo = {
+                id: Date.now(),
+                nome: document.getElementById('nomeProdotto').value,
+                quantita: document.getElementById('quantitaProdotto').value,
+                ubicazione: document.getElementById('ubicazioneProdotto').value,
+                scadenza: document.getElementById('scadenzaProdotto').value,
+                descrizione: document.getElementById('descrizioneProdotto').value,
+                immagine: window.tempImmagineRemota || ''
+            };
+
+            prodotti.push(nuovo);
+            localStorage.setItem('eatMeFirst_prodotti', JSON.stringify(prodotti));
+            window.tempImmagineRemota = '';
+            document.getElementById('prodottoForm').reset();
+            renderizzaTabella();
+        }
+
+        function eliminaProdotto(id) {
+            prodotti = prodotti.filter(p => p.id !== id);
+            localStorage.setItem('eatMeFirst_prodotti', JSON.stringify(prodotti));
+            renderizzaTabella();
+        }
+
+        function renderizzaTabella() {
+            const tbody = document.getElementById('tabellaProdottiBody');
+            const filtro = document.getElementById('filtroUbicazione').value;
+            tbody.innerHTML = '';
+
+            const filtrati = prodotti.filter(p => filtro === 'Tutti' || p.ubicazione === filtro);
+
+            if(filtrati.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#64748b;">Nessun prodotto registrato.</td></tr>`;
+                return;
+            }
+
+            filtrati.forEach(p => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            ${p.immagine ? `<img src="${p.immagine}" style="width:36px; height:36px; object-fit:contain;">` : ''}
+                            <div>
+                                <strong>${p.nome}</strong>
+                                <div style="font-size:0.75rem; color:#64748b; max-width:250px;">${p.descrizione || ''}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>${p.quantita}</td>
+                    <td>${p.ubicazione}</td>
+                    <td>${p.scadenza.split('-').reverse().join('/')}</td>
+                    <td><span class="badge">Presente</span></td>
+                    <td><button onclick="eliminaProdotto(${p.id})" style="background:none; border:none; color:#bc4749; cursor:pointer; font-weight:bold;">Elimina</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        popolaUbicazioni();
+        renderizzaTabella();
+    </script>
+</body>
+</html>
