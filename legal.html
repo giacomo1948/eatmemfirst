@@ -3,161 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EatMeFirst - Condizioni e Sicurezza</title>
+    <title>EatMeFirst - Accettazione Note Legali</title>
+    <link rel="stylesheet" href="style.css">
     <style>
-        html, body {
+        body.legal-cover-body {
             margin: 0;
             padding: 0;
-            height: 100%;
-            width: 100%;
-            font-family: Arial, sans-serif;
-            overflow: hidden;
-        }
-        /* Immagine di sfondo a schermo intero (condizioni.png) */
-        .fullscreen-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            min-height: 100vh;
             background-image: url('condizioni.png');
-            background-position: center center;
-            background-repeat: no-repeat;
             background-size: cover;
-            background-color: rgba(0, 0, 0, 0.3);
-            background-blend-mode: darken;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            font-family: Arial, sans-serif;
         }
-        /* Contenitore posizionato tutto a destra per lasciare visibile il cellulare a sinistra */
-        .content-overlay {
-            position: absolute;
-            top: 50%;
-            right: 5%;
-            transform: translateY(-50%);
-            width: 90%;
-            max-width: 460px;
+        .legal-box {
             background: rgba(255, 255, 255, 0.95);
-            padding: 22px;
-            border-radius: 14px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-            box-sizing: border-box;
-        }
-        .app-logo {
-            text-align: center;
-            font-size: 1.4rem;
-            font-weight: bold;
-            color: #2e7d32;
-            margin-bottom: 4px;
-        }
-        h2 {
-            font-size: 1.05rem;
-            margin-top: 0;
-            color: #2c3e50;
-            text-align: center;
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 6px;
-        }
-        p {
-            font-size: 0.82rem;
-            color: #444;
-            line-height: 1.35;
-            margin: 6px 0;
-        }
-        .warning-box {
-            background: #fff8e1;
-            border-left: 4px solid #fbc02d;
-            padding: 8px 10px;
-            font-size: 0.78rem;
-            color: #5d4037;
-            margin: 10px 0;
-            line-height: 1.3;
-        }
-        .link-full {
-            display: block;
-            text-align: center;
-            font-size: 0.82rem;
-            color: #2980b9;
-            text-decoration: none;
-            font-weight: bold;
-            margin: 8px 0;
-        }
-        .link-full:hover {
-            text-decoration: underline;
-        }
-        .checkbox-row {
-            display: flex;
-            align-items: flex-start;
-            gap: 8px;
-            margin: 12px 0;
-            font-size: 0.82rem;
-            color: #333;
-            font-weight: bold;
-        }
-        .checkbox-row input {
-            width: 16px;
-            height: 16px;
-            margin-top: 2px;
-            cursor: pointer;
-        }
-        .btn-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 12px;
-        }
-        .btn {
-            flex: 1;
-            padding: 9px;
-            border: none;
-            border-radius: 6px;
-            font-size: 0.9rem;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .btn-secondary {
-            background-color: #e0e0e0;
-            color: #333;
-        }
-        .btn-secondary:hover {
-            background-color: #d0d0d0;
+            padding: 30px;
+            max-width: 450px;
+            margin-right: 50px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
         }
     </style>
 </head>
-<body>
-
-    <div class="fullscreen-bg"></div>
-
-    <div class="content-overlay">
-        <div class="app-logo">EatMeFirst</div>
-        <h2>Condizioni d'Uso e Sicurezza</h2>
+<body class="legal-cover-body">
+    <div class="legal-box">
+        <h2>Note Legali e Condizioni</h2>
+        <p>Prima di proseguire con la configurazione del tuo nucleo familiare su EatMeFirst, ti invitiamo a prendere visione delle condizioni d'uso che regolano l'applicazione.</p>
         
-        <p>Il software opera in locale sul tuo dispositivo per garantire la massima privacy. Nessun dato viene trasmesso all'esterno.</p>
-
-        <!-- Link diretto alla pagina del testo integrale -->
-        <a href="condizioni-integrali.html" class="link-full">📖 Leggi il testo integrale delle condizioni d'uso</a>
-
-        <!-- Testo fisso di avviso (Punto 4) -->
-        <div class="warning-box">
-            <strong>Nota importante (Punto 4):</strong> Proseguendo dichiari di aver compreso che l'app ha scopo organizzativo. L'utente è l'unico responsabile del controllo degli alimenti, sollevando il programma da ogni responsabilità.
+        <p><a href="condizioni-integrali.html" target="_blank" style="color: #2b7a78; font-weight: bold;">Leggi il testo integrale delle Condizioni d'Uso e Note Legali</a></p>
+        
+        <div style="margin: 20px 0;">
+            <label style="font-size: 0.9rem; cursor: pointer; display: flex; align-items: flex-start; gap: 10px;">
+                <input type="checkbox" id="acceptCheckbox" style="margin-top: 4px;">
+                <span>Confermo di aver letto e compreso integralmente le condizioni d'uso, e di aver ben capito il punto 4 (la responsabilità del controllo degli alimenti prima del consumo è esclusivamente mia).</span>
+            </label>
         </div>
 
-        <!-- Casella di spunta: se cliccata, memorizza e va alla pagina famiglia -->
-        <div class="checkbox-row">
-            <input type="checkbox" id="accept-check" onchange="handleAccept(this)">
-            <label for="accept-check" style="cursor: pointer;">Ho letto e accetto le condizioni (prosegui)</label>
-        </div>
-
-        <!-- Pulsante Indietro per tornare alla index -->
-        <div class="btn-group">
-            <button class="btn btn-secondary" onclick="window.location.href='index.html'">Indietro</button>
-        </div>
+        <button id="proceedBtn" disabled style="opacity: 0.5; cursor: not-allowed; width: 100%; padding: 14px; border: none; background: #2b7a78; color: white; border-radius: 6px; font-weight: bold; font-size: 1rem;">Crea Nucleo Familiare</button>
     </div>
 
     <script>
-        function handleAccept(checkbox) {
-            if (checkbox.checked) {
-                localStorage.setItem('eatMeFirst_setupDone', 'true');
-                window.location.href = 'famiglia.html';
+        const checkbox = document.getElementById('acceptCheckbox');
+        const btn = document.getElementById('proceedBtn');
+
+        checkbox.addEventListener('change', function() {
+            if (this.checked) {
+                btn.disabled = false;
+                btn.style.opacity = '1';
+                btn.style.cursor = 'pointer';
+            } else {
+                btn.disabled = true;
+                btn.style.opacity = '0.5';
+                btn.style.cursor = 'not-allowed';
             }
-        }
+        });
+
+        btn.addEventListener('click', function() {
+            if (!checkbox.checked) return;
+            // Reindirizza alla pagina di configurazione per creare il nucleo familiare
+            window.location.href = 'configurazione.html';
+        });
     </script>
 </body>
 </html>

@@ -3,240 +3,208 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EatMeFirst - Configurazione</title>
+    <title>EatMeFirst - Configurazione Nucleo Familiare</title>
     <style>
-        body.page-generic-body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f6f8;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+        * {
             box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body.family-cover-body {
+            min-height: 100vh;
+            background-image: url('famiglia.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            position: relative;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
-        .step-card {
+        /* Logo separato in alto in mezzo */
+        .top-logo-container {
+            text-align: center;
+            padding-top: 25px;
+        }
+        .top-logo-container h1 {
+            color: #ffffff;
+            font-size: 2.2rem;
+            text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+            margin-bottom: 2px;
+            letter-spacing: 1px;
+        }
+        .top-logo-container p {
+            color: #e2e8f0;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+            font-weight: bold;
+        }
+
+        /* Pannello inferiore a tutta larghezza che arriva fino al tavolo */
+        .bottom-panel {
+            background: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(5px);
             width: 100%;
-            max-width: 420px;
-        }
-
-        .content-card {
-            background: #ffffff;
-            padding: 24px;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        }
-
-        h2 {
-            font-size: 1.25rem;
-            margin-top: 0;
-            color: #2c3e50;
-        }
-
-        p {
-            font-size: 0.9rem;
-            color: #555;
-            line-height: 1.4;
-        }
-
-        .link-detail {
-            font-size: 0.82rem;
-            color: #2980b9;
-            cursor: pointer;
-            display: inline-block;
-            margin: 10px 0 15px 0;
-        }
-
-        .link-detail:hover {
-            text-decoration: underline;
-        }
-
-        .checkbox-container {
+            padding: 25px 40px;
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.3);
+            border-top-left-radius: 16px;
+            border-top-right-radius: 16px;
             display: flex;
-            align-items: flex-start;
-            gap: 10px;
-            margin: 15px 0;
-            font-size: 0.85rem;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .panel-content-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .family-info-text {
+            font-size: 0.88rem;
             color: #333;
+            line-height: 1.45;
+            flex: 2;
+            background: #f4f9f9;
+            padding: 12px 16px;
+            border-left: 4px solid #2b7a78;
+            border-radius: 4px;
         }
 
-        .checkbox-container input {
-            margin-top: 3px;
-        }
-
-        .btn-group {
+        .form-inputs-group {
+            flex: 1;
             display: flex;
+            flex-direction: column;
             gap: 10px;
-            margin-top: 20px;
+            background: #ffffff;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .form-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .form-row label {
+            font-weight: bold;
+            color: #333;
+            font-size: 0.9rem;
+        }
+
+        .form-row input {
+            width: 70px;
+            padding: 6px;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            padding-top: 5px;
+            border-top: 1px solid #e2e8f0;
         }
 
         .btn {
-            flex: 1;
-            padding: 10px 16px;
+            padding: 10px 25px;
             border: none;
             border-radius: 6px;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             font-weight: bold;
             cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            transition: background 0.2s;
         }
-
-        .btn-primary {
-            background-color: #2e7d32;
-            color: white;
-        }
-
-        .btn-primary:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-        }
-
-        .btn-secondary {
-            background-color: #e0e0e0;
+        .btn-back {
+            background-color: #e2e8f0;
             color: #333;
         }
-
-        .app-title {
-            font-size: 1.4rem;
-            font-weight: bold;
-            color: #2c3e50;
-            margin-bottom: 15px;
-            text-align: center;
+        .btn-back:hover {
+            background-color: #cbd5e1;
         }
-
-        .family-top-btn {
-            width: 100%;
-            padding: 12px;
-            background-color: #2e7d32;
+        .btn-continue {
+            background-color: #2b7a78;
             color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            margin-bottom: 20px;
         }
-
-        .family-bottom-bar {
-            background: #ffffff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            text-align: center;
-        }
-
-        .family-form-group {
-            margin-bottom: 15px;
-        }
-
-        .family-form-group label {
-            display: block;
-            font-size: 0.85rem;
-            font-weight: bold;
-            margin-bottom: 5px;
-            color: #333;
-        }
-
-        .family-form-group input {
-            width: 100%;
-            padding: 8px;
-            box-sizing: border-box;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 1rem;
+        .btn-continue:hover {
+            background-color: #3a9b98;
         }
     </style>
 </head>
-<body class="page-generic-body">
+<body class="family-cover-body">
 
-    <div id="step-terms" class="step-card active">
-        <div class="content-card">
-            <h2>Termini d'Uso, Privacy & Brevetto</h2>
-            <p><strong>Benvenuto in EatMeFirst.</strong> Questo software opera in regime di <em>totale autonomia locale</em> sul tuo dispositivo. Nessun dato sensibile viene trasmesso a server esterni.</p>
-            <span class="link-detail" onclick="showDetails(true)">📖 Leggi i dettagli completi su Responsabilità e Brevetto &raquo;</span>
-            
-            <div class="checkbox-container">
-                <input type="checkbox" id="accept-terms" onchange="toggleAccept()">
-                <label for="accept-terms">Accetto i termini d'uso, le condizioni di responsabilità e la gestione locale dei dati.</label>
-            </div>
-            
-            <div class="btn-group">
-                <button class="btn btn-secondary" onclick="window.location.href='index.html'">Indietro</button>
-                <button id="btn-next-terms" class="btn btn-primary" onclick="goToFamilyIntro()" disabled>Continua</button>
-            </div>
-        </div>
+    <!-- Logo separato in alto in mezzo -->
+    <div class="top-logo-container">
+        <h1>EatMeFirst</h1>
+        <p>Configurazione Nucleo Familiare</p>
     </div>
 
-    <div id="step-details" class="step-card" style="display: none;">
-        <div class="content-card">
-            <h2>Note legali, Responsabilità e Brevetto</h2>
-            <p><strong>1. Limitazione di Responsabilità:</strong> EatMeFirst fornisce stime basate sui dati inseriti dall'utente. L'utente resta l'unico responsabile del controllo visivo e olfattivo degli alimenti prima del consumo.</p>
-            <p><strong>2. Proprietà Intellettuale e Brevetto:</strong> La logica predittiva delle scadenze e l'interfaccia a traffico locale sono protette da privativa industriale e concetti di brevetto registrati.</p>
-            <button class="btn btn-primary" onclick="showDetails(false)" style="margin-top: 15px; width: 100%;">Indietro ai Termini</button>
-        </div>
-    </div>
+    <!-- Pannello inferiore a tutta larghezza -->
+    <div class="bottom-panel">
+        <form id="familyForm">
+            <div class="panel-content-row">
+                <!-- Testo esplicativo sul perché della composizione familiare -->
+                <div class="family-info-text">
+                    <strong>Perché chiediamo questa informazione?</strong> 
+                    Il programma analizza i consumi per stimare se le grandi quantità di generi alimentari acquistati potranno essere consumate in tempo prima della scadenza, basandosi sul trend dei prelievi. 
+                    <br>
+                    <em>Tutti i calcoli avvengono interamente ed esclusivamente sul tuo dispositivo: le informazioni inserite restano al sicuro nel tuo hardware.</em>
+                </div>
 
-    <div id="step-family-intro" class="step-card" style="display: none;">
-        <div class="app-title">EatMeFirst</div>
-        <button class="family-top-btn" onclick="goToFamilyForm()">Continua &raquo;</button>
-        <div class="family-bottom-bar">
-            <h2>Il tuo nucleo familiare</h2>
-            <p>I dati servono esclusivamente in locale per calcolare i coefficienti di consumo stimato, prevenendo gli sprechi alimentari.</p>
-        </div>
-    </div>
+                <!-- Tabella / Inputs numerici -->
+                <div class="form-inputs-group">
+                    <div class="form-row">
+                        <label for="adults">Numero Adulti:</label>
+                        <input type="number" id="adults" min="1" value="2" required>
+                    </div>
+                    <div class="form-row">
+                        <label for="children">Numero Bambini:</label>
+                        <input type="number" id="children" min="0" value="0" required>
+                    </div>
+                </div>
+            </div>
 
-    <div id="step-family-form" class="step-card" style="display: none;">
-        <div class="content-card">
-            <h2>Composizione del Nucleo Familiare</h2>
-            <p style="font-size: 0.88rem; color: #555; margin-bottom: 20px;">Inserisci il numero di persone per calcolare con precisione i giorni di esaurimento scorte.</p>
-            
-            <div class="family-form-group">
-                <label>Numero Adulti:</label>
-                <input type="number" id="adults-count" min="1" value="2">
+            <!-- Pulsanti di navigazione in basso -->
+            <div class="actions">
+                <a href="legal.html" class="btn btn-back">Indietro</a>
+                <button type="submit" class="btn btn-continue">Continua</button>
             </div>
-            <div class="family-form-group">
-                <label>Numero Bambini:</label>
-                <input type="number" id="kids-count" min="0" value="0">
-            </div>
-            
-            <div class="btn-group" style="margin-top: 25px;">
-                <button class="btn btn-secondary" onclick="backToFamilyIntro()">Indietro</button>
-                <button class="btn btn-primary" onclick="completeSetup()">Salva e Accedi alla Dispensa</button>
-            </div>
-        </div>
+        </form>
     </div>
 
     <script>
-        function toggleAccept() {
-            const checkbox = document.getElementById('accept-terms');
-            document.getElementById('btn-next-terms').disabled = !checkbox.checked;
-        }
+        document.getElementById('familyForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const adults = document.getElementById('adults').value;
+            const children = document.getElementById('children').value;
 
-        function showDetails(show) {
-            document.getElementById('step-terms').style.display = show ? 'none' : 'block';
-            document.getElementById('step-details').style.display = show ? 'block' : 'none';
-        }
+            // Salviamo i dati localmente nel browser
+            localStorage.setItem('eatMeFirst_adults', adults);
+            localStorage.setItem('eatMeFirst_children', children);
+            localStorage.setItem('eatMeFirst_configured', 'true');
 
-        function goToFamilyIntro() {
-            document.getElementById('step-terms').style.display = 'none';
-            document.getElementById('step-family-intro').style.display = 'block';
-        }
-
-        function backToFamilyIntro() {
-            document.getElementById('step-family-form').style.display = 'none';
-            document.getElementById('step-family-intro').style.display = 'block';
-        }
-
-        function goToFamilyForm() {
-            document.getElementById('step-family-intro').style.display = 'none';
-            document.getElementById('step-family-form').style.display = 'block';
-        }
-
-        function completeSetup() {
-            localStorage.setItem('eatMeFirst_setupDone', 'true');
+            // Passiamo alla pagina dell'inventario
             window.location.href = 'inventario.html';
-        }
+        });
     </script>
 </body>
 </html>
