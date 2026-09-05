@@ -7,125 +7,134 @@
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            line-height: 1.6;
+            line-height: 1.4;
             color: #333;
-            background-color: #f9f9f9;
+            background-color: #f4f6f8;
             margin: 0;
-            padding: 20px;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
         }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
+        .phone-container {
+            width: 100%;
+            max-width: 400px;
             background: #fff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
-        h1 {
-            color: #2c3e50;
-            border-bottom: 2px solid #eee;
-            padding-bottom: 10px;
-            margin-top: 0;
-        }
-        h3 {
-            color: #34495e;
-            margin-top: 25px;
-        }
-        p, li {
-            font-size: 15px;
-        }
-        ul {
-            padding-left: 20px;
-        }
-        .checkbox-container {
-            margin-top: 30px;
             padding: 20px;
-            background: #f1f8ff;
-            border: 1px solid #c8e1ff;
-            border-radius: 6px;
+            border-radius: 24px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border: 8px solid #2c3e50;
+            box-sizing: border-box;
         }
-        .checkbox-container label {
-            font-size: 15px;
+        .logo {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #27ae60;
+            margin-bottom: 10px;
+        }
+        h2 {
+            font-size: 1.1rem;
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 8px;
+        }
+        /* Box scorrevole per il testo legale */
+        .legal-scroll-box {
+            max-height: 180px;
+            overflow-y: auto;
+            border: 1px solid #e1e4e8;
+            background: #fafbfc;
+            padding: 10px;
+            font-size: 0.8rem;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            color: #555;
+        }
+        .legal-scroll-box h4 {
+            margin: 8px 0 4px 0;
+            color: #333;
+            font-size: 0.85rem;
+        }
+        /* Sezione spunta e pulsante */
+        .action-section {
+            margin-top: 10px;
+        }
+        .checkbox-label {
+            font-size: 0.85rem;
             cursor: pointer;
             display: flex;
             align-items: flex-start;
-            gap: 10px;
+            gap: 8px;
+            color: #24292e;
+            margin-bottom: 15px;
             font-weight: 500;
-            color: #1f2328;
         }
-        .checkbox-container input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-            margin-top: 2px;
+        .checkbox-label input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin-top: 1px;
             cursor: pointer;
+            accent-color: #27ae60;
         }
-        .btn-proceed {
-            display: inline-block;
-            margin-top: 15px;
-            background-color: #2ea44f;
+        .btn-accept {
+            width: 100%;
+            background-color: #1b4d3e; /* Verde scuro elegante simile all'immagine */
             color: white;
             border: none;
-            padding: 10px 20px;
-            font-size: 16px;
-            border-radius: 6px;
+            padding: 12px;
+            font-size: 1rem;
+            border-radius: 12px;
             cursor: pointer;
             font-weight: bold;
+            box-shadow: 0 4px 10px rgba(27, 77, 62, 0.3);
+            transition: background 0.2s;
         }
-        .btn-proceed:hover {
-            background-color: #2c974b;
+        .btn-accept:hover {
+            background-color: #14382d;
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>Note Legali, Trasparenza e Condizioni d'Uso</h1>
+<div class="phone-container">
+    <div class="logo">EatMeFirst</div>
+    <h2>Note Legali, Trasparenza e Condizioni</h2>
 
-    <h3>1. Architettura Locale, Peso Minimo e Versioni Free/Pro</h3>
-    <ul>
-        <li><strong>Leggerissimo sul tuo dispositivo:</strong> EatMeFirst è un software compatto e ottimizzato, con un peso complessivo di appena pochi Megabyte (solitamente meno di 30-50 MB). Non rallenta il computer, non esegue pesanti download nascosti e risiede interamente in locale, senza inviare dati personali su cloud esterni.</li>
-        <li><strong>Struttura Free e Pro:</strong> Il programma è organizzato con sezioni <em>Free</em> e sezioni <em>Pro</em>. La versione gratuita, dotata di ampie e ricche funzionalità, sarà <strong>sempre disponibile gratuitamente e senza alcun vincolo</strong>. Attualmente l'intera applicazione (comprese le funzionalità avanzate) viene offerta temporaneamente come <em>Free</em> per permetterti di testarla liberamente, fino a quando i programmatori non avranno definito del tutto le migliorie opzionali. In futuro, le sezioni extra e senza pubblicità verranno considerate <em>Pro</em>; verrai comunque informato per tempo di ogni novità.</li>
-    </ul>
+    <!-- Box con il testo scorrevole per la lettura -->
+    <div class="legal-scroll-box">
+        <p><strong>1. Architettura Locale e Pro:</strong> Il programma risiede sul tuo dispositivo (peso &lt;30-50 MB) senza cloud esterno. Funzioni Free sempre disponibili; sezioni Pro future con avviso preventivo.</p>
+        <p><strong>2. Codici a Barre:</strong> Scansione tramite interrogazione sicura di database esterni (es. <a href="https://world.openfoodfacts.org" target="_blank">Open Food Facts</a>) solo per recuperare nome e foto del prodotto.</p>
+        <p><strong>3. Nucleo Familiare:</strong> Inserimento del numero di persone gestito interamente in locale per calcolare i consumi stimati. Nessuna vendita di prodotti e assenza di pubblicità invasiva.</p>
+        <h4 style="color: #c0392b;">4. Limitazione di Responsabilità (Importante)</h4>
+        <p>L'app ha uno scopo puramente organizzativo. L'utente resta l'unico ed esclusivo responsabile del controllo fisico, visivo e olfattivo di qualsiasi alimento prima del consumo, sollevando gli sviluppatori da qualunque responsabilità.</p>
+        <p><strong>5. Proprietà Intellettuale:</strong> Logica predittiva e interfaccia protette da privativa industriale e concetti di brevetto registrati.</p>
+    </div>
 
-    <h3>2. Scansione Codici a Barre e Fonti Esterne</h3>
-    <ul>
-        <li>Per velocizzare l'inserimento dei prodotti ed evitare digitazioni noiose, l'app mette a disposizione la scansione di codici a barre e QR code. In quel momento, il programma effettua una rapida interrogazione su database pubblici e condivisi di prodotti (come ad esempio <em>Open Food Facts</em> – puoi verificarne il funzionamento su <a href="https://world.openfoodfacts.org" target="_blank">openfoodfacts.org</a>) al solo scopo di recuperare la descrizione testuale e l'immagine ufficiale, se disponibile. Nessun dato sulle tue abitudini viene tracciato o rivenduto.</li>
-    </ul>
-
-    <h3>3. Nucleo Familiare, Consumi Locali e Finalità dell'App</h3>
-    <ul>
-        <li>EatMeFirst calcola stime e proiezioni di consumo intelligenti <strong>elaborando i dati direttamente sul tuo dispositivo</strong>: nessun calcolo o dato viene rilevato, tracciato o inviato all'esterno. Ti chiederemo di indicare esclusivamente la composizione del tuo nucleo familiare (numero di componenti): questo serve <strong>unicamente</strong> a tarare i calcoli matematici sulla quantità di cibo realmente consumata, evitando sprechi e calibrando le scadenze sulle reali porzioni domestiche.</li>
-        <li>Il programma <strong>non effettua alcuna vendita diretta di prodotti</strong> e ha il solo ed esclusivo scopo di aiutarti a organizzare la spesa e la dispensa. Attualmente l'app è priva di pubblicità; in futuro, per sostenere il progetto nella versione gratuita, non è esclusa l'introduzione di forme pubblicitarie non invasive (mentre la futura versione <em>Pro</em> nascerà proprio per escluderla del tutto).</li>
-    </ul>
-
-    <h3>4. Limitazione di Responsabilità e Sicurezza Alimentare</h3>
-    <ul>
-        <li>L'applicazione ha uno scopo puramente organizzativo e di supporto alla riduzione degli sprechi domestici. L'utente resta l'unico ed esclusivo responsabile del controllo fisico, visivo e olfattivo di qualsiasi alimento prima del consumo, sollevando gli sviluppatori da qualunque responsabilità per errata conservazione o ingestione di cibi deteriorati.</li>
-    </ul>
-
-    <h3>5. Proprietà Intellettuale e Privativa Industriale</h3>
-    <ul>
-        <li>La logica predittiva avanzata per la gestione delle scadenze e l'architettura basata su interfaccia locale sono protette da privativa industriale e concetti di brevetto registrati. Qualsiasi tentativo di copia non autorizzata o ingegneria inversa del software è vietato a termini di legge.</li>
-    </ul>
-
-    <div class="checkbox-container">
-        <label>
-            <input type="checkbox" id="accept-terms">
-            <span>Confermo di aver letto e compreso integralmente le condizioni d'uso, e di aver ben capito il punto 4 (la responsabilità del controllo degli alimenti prima del consumo è esclusivamente mia).</span>
+    <!-- Sezione interattiva con spunta e tasto -->
+    <div class="action-section">
+        <label class="checkbox-label">
+            <input type="checkbox" id="accept-point4">
+            <span>Accetto le condizioni d'uso e confermo di aver ben compreso il punto 4 (la responsabilità del controllo degli alimenti è mia).</span>
         </label>
-        <button type="button" class="btn-proceed" onclick="proseguiApp()">Procedi con EatMeFirst</button>
+        
+        <button type="button" class="btn-accept" onclick="proseguiApp()">Accetta e continua</button>
     </div>
 </div>
 
 <script>
     function proseguiApp() {
-        const checkbox = document.getElementById('accept-terms');
+        const checkbox = document.getElementById('accept-point4');
         if (!checkbox.checked) {
-            alert("Per favore, spunta la casella di conferma per procedere.");
+            alert("Per favore, spunta la casella per confermare di aver compreso le condizioni (punto 4) prima di procedere.");
             return;
         }
-        // Qui puoi reindirizzare alla dashboard principale dell'app, es:
-        window.location.href = "index.html"; // oppure la pagina principale della tua app
+        // Reindirizzamento alla schermata successiva dell'app
+        window.location.href = "configurazione.html";
     }
 </script>
 
