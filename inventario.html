@@ -3,392 +3,210 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EatMeFirst - Dispensa e Carico</title>
-    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <title>EatMeFirst - Dashboard Inventario</title>
     <style>
-        body.page-dashboard-body {
-            font-family: Arial, sans-serif;
+        * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            background-color: #f4f6f8;
+        }
+
+        body.page-dashboard-body {
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            background-image: url('spesa.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            position: relative;
             color: #333;
-        }
-
-        .dash-header-top {
             display: flex;
+            flex-direction: column;
             justify-content: space-between;
-            align-items: center;
-            padding: 12px 20px;
-            background-color: #ffffff;
-            border-bottom: 1px solid #e1e4e8;
+            padding: 25px;
         }
 
-        .dash-app-title {
-            font-size: 1.2rem;
-            font-weight: bold;
+        /* Logo ingrandito in alto in trasparenza pura */
+        .top-logo-container {
+            text-align: left;
+        }
+        .top-logo-container h1 {
+            color: #ffffff;
+            font-size: 2.6rem;
+            text-shadow: 0 3px 8px rgba(0,0,0,0.8);
+            letter-spacing: 1.5px;
         }
 
-        .dash-menu-icon {
-            padding: 6px 12px;
-            background: #f1f3f5;
-            border: 1px solid #ced4da;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        .dash-main-layout {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .master-traffic-light {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .master-bulb {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            background-color: #ccc;
-            border: 1px solid #999;
-        }
-
-        .dash-buttons-column {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
+        /* Area contenitore principale della dashboard */
+        .dashboard-layout-container {
             width: 100%;
-            max-width: 320px;
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+            min-height: 420px;
         }
 
-        .dash-soft-btn {
+        /* Semaforo ingrandito in alto a destra */
+        .semaforo-panel {
+            background: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(6px);
+            padding: 26px;
+            border-radius: 14px;
+            box-shadow: 0 12px 35px rgba(0,0,0,0.4);
+            width: 360px;
+            position: absolute;
+            top: 0;
+            right: 2%;
+        }
+
+        .semaforo-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .semaforo-row {
+            display: grid;
+            grid-template-columns: 32px 1fr;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .bulb {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            border: 2px solid rgba(0,0,0,0.2);
+            justify-self: center;
+        }
+        .bulb-green {
+            background-color: #10b981;
+            box-shadow: 0 0 12px #10b981;
+        }
+        .bulb-yellow {
+            background-color: #fde047;
+            opacity: 0.3;
+        }
+        .bulb-red {
+            background-color: #ef4444;
+            opacity: 0.3;
+        }
+
+        .dash-btn {
+            background-color: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #333;
+            cursor: pointer;
+            text-align: left;
+            width: 100%;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            transition: background 0.2s;
+            line-height: 1.2;
+            text-decoration: none;
+            display: block;
+        }
+        .dash-btn:hover {
+            background-color: #f1f5f9;
+        }
+
+        /* Pulsanti di carico e scarico al centro in basso (sotto alla salsa) */
+        .actions-panel {
+            background: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(6px);
+            padding: 18px;
+            border-radius: 14px;
+            box-shadow: 0 12px 35px rgba(0,0,0,0.4);
+            width: 300px;
+            position: absolute;
+            bottom: 0;
+            left: 38%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .dash-btn.action-load {
+            background-color: #2b7a78;
+            color: white;
+            border-color: #2b7a78;
+            font-weight: bold;
+            text-align: center;
             padding: 12px;
             font-size: 1rem;
-            background-color: #ffffff;
-            border: 1px solid #ced4da;
-            border-radius: 8px;
-            cursor: pointer;
-            text-align: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .dash-btn.action-load:hover {
+            background-color: #3a9b98;
         }
 
-        .dash-soft-btn.action-load {
-            background-color: #e3f2fd;
-            border-color: #90caf9;
-            font-weight: bold;
-        }
-
-        .load-container {
-            max-width: 400px;
-            margin: 20px auto;
-            background: #ffffff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-
-        .scan-action-btn {
-            width: 100%;
-            padding: 14px;
-            background-color: #2e7d32;
+        .dash-btn.action-unload {
+            background-color: #475569;
             color: white;
+            border-color: #475569;
+            font-weight: bold;
+            text-align: center;
+            padding: 12px;
             font-size: 1rem;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
+        }
+        .dash-btn.action-unload:hover {
+            background-color: #64748b;
         }
 
-        #scanner-section {
-            display: none;
-            margin-top: 15px;
-        }
-
-        #scanner-section.active {
-            display: block;
-        }
-
-        #reader {
-            width: 100%;
-            border-radius: 6px;
-            overflow: hidden;
-            background: #000;
-        }
-
-        .product-result-grid {
-            display: grid;
-            grid-template-columns: 1fr 110px;
-            gap: 12px;
-            margin-top: 15px;
-        }
-
-        .form-row {
-            margin-bottom: 10px;
-        }
-
-        .form-row label {
-            font-size: 0.78rem;
-            font-weight: bold;
-            display: block;
-            margin-bottom: 3px;
-        }
-
-        .form-row input, .form-row textarea {
-            width: 100%;
-            padding: 8px;
-            box-sizing: border-box;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        .product-image-preview {
-            width: 100px;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 6px;
-            border: 1px solid #ddd;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #f8f9fa;
-            font-size: 0.7rem;
-            color: #666;
-            text-align: center;
-        }
-
-        .expiry-buttons {
-            display: flex;
-            gap: 8px;
-        }
-
-        .expiry-btn {
-            flex: 1;
-            padding: 10px;
-            border: none;
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
-            color: white;
-        }
-
-        .btn-tassativa {
-            background-color: #d32f2f;
-        }
-
-        .btn-consigliata {
-            background-color: #fbc02d;
-            color: #333;
-        }
-
-        .notice-text {
-            font-size: 0.75rem;
-            color: #666;
-            margin-top: 4px;
+        @media (max-width: 768px) {
+            .dashboard-layout-container {
+                display: flex;
+                flex-direction: column;
+                gap: 15px;
+                position: static;
+                min-height: auto;
+            }
+            .semaforo-panel, .actions-panel {
+                position: static;
+                width: 100%;
+                max-width: 340px;
+                margin: 0 auto;
+                transform: none;
+            }
         }
     </style>
 </head>
 <body class="page-dashboard-body">
 
-    <div class="dash-header-top">
-        <div class="dash-app-title">EatMeFirst</div>
-        <button class="dash-menu-icon" onclick="toggleMenu()">☰ Menu</button>
+    <div class="top-logo-container">
+        <h1>EatMeFirst</h1>
     </div>
 
-    <div id="dashboard-main-view" class="dash-main-layout">
-        <div class="master-traffic-light">
-            <div class="master-bulb" id="bulb-red"></div>
-            <div class="master-bulb" id="bulb-yellow"></div>
-            <div class="master-bulb" id="bulb-green"></div>
-        </div>
-
-        <div class="dash-buttons-column">
-            <button class="dash-soft-btn" onclick="alert('Sezione merci in dispensa')">Merci in dispensa</button>
-            <button class="dash-soft-btn" onclick="alert('Scadenza consigliata')">Scadenza consigliata</button>
-            <button class="dash-soft-btn" onclick="alert('Scadenza tassativa')">Scadenza tassativa</button>
-            <button class="dash-soft-btn action-load" onclick="openLoadGoods()">➕ Carico merci</button>
-            <button class="dash-soft-btn" onclick="alert('Scarico merci')">➖ Scarico merci</button>
-        </div>
-    </div>
-
-    <div id="load-goods-view" style="display: none; width: 100%;">
-        <div class="load-container">
-            <button class="scan-action-btn" id="btn-start-scan" onclick="startScanner()">
-                📷 Scansiona codice a barre / QR
-            </button>
-
-            <div id="scanner-section">
-                <div id="reader"></div>
-
-                <div class="product-result-grid">
-                    <div class="product-form-fields">
-                        <div class="form-row">
-                            <label>Codice Rilevato:</label>
-                            <input type="text" id="detected-code" readonly style="background: #e9ecef; font-weight: bold;">
-                        </div>
-
-                        <div class="form-row" id="desc-container"></div>
-
-                        <div class="form-row">
-                            <label>Quantità:</label>
-                            <input type="number" id="prod-qty" value="1" min="1">
-                        </div>
-                    </div>
-
-                    <div>
-                        <label style="font-size: 0.78rem; font-weight: bold; margin-bottom: 3px; display: block;">Immagine:</label>
-                        <img id="product-img-preview" class="product-image-preview" src="" alt="Foto" style="display:none;">
-                        <div id="no-image-placeholder" class="product-image-preview">Nessuna immagine</div>
-                    </div>
+    <div class="dashboard-layout-container">
+        
+        <div class="semaforo-panel">
+            <div class="semaforo-grid">
+                <div class="semaforo-row">
+                    <div class="bulb bulb-green" id="bulb-green"></div>
+                    <a href="dispensa.html" class="dash-btn">Merci in dispensa</a>
                 </div>
-
-                <div class="form-row">
-                    <label>Registra Scadenza:</label>
-                    <div class="expiry-buttons">
-                        <button class="expiry-btn btn-tassativa" onclick="saveProduct('tassativa')">Tassativa</button>
-                        <button class="expiry-btn btn-consigliata" onclick="saveProduct('consigliata')">Consigliata</button>
-                    </div>
-                    <div class="notice-text">Nota: Se hai prodotti identici ma con scadenze diverse, fai inserimenti separati.</div>
+                <div class="semaforo-row">
+                    <div class="bulb bulb-yellow" id="bulb-yellow"></div>
+                    <a href="dispensa.html?filter=consigliata" class="dash-btn">Scadenza consigliata</a>
                 </div>
-
-                <div class="form-row" style="margin-top: 8px; border-top: 1px solid #eee; padding-top: 6px;">
-                    <label>Nota Evento Speciale:</label>
-                    <textarea rows="2" placeholder="Acquisto per evento... data... avvisare... giorni prima"></textarea>
+                <div class="semaforo-row">
+                    <div class="bulb bulb-red" id="bulb-red"></div>
+                    <a href="dispensa.html?filter=tassativa" class="dash-btn">Scadenza tassativa</a>
                 </div>
-                
-                <button class="btn btn-secondary" style="margin-top: 10px; width: 100%;" onclick="closeLoadGoods()">Torna alla Dashboard</button>
             </div>
         </div>
+
+        <div class="actions-panel">
+            <a href="carico.html" class="dash-btn action-load">➕ Carico merci</a>
+            <a href="scarico.html" class="dash-btn action-unload">➖ Scarico merci</a>
+        </div>
+
     </div>
 
-    <script>
-        let html5QrCode = null;
+    <div></div>
 
-        function openLoadGoods() {
-            document.getElementById('dashboard-main-view').style.display = 'none';
-            document.getElementById('load-goods-view').style.display = 'block';
-        }
-
-        function closeLoadGoods() {
-            if(html5QrCode && html5QrCode.isScanning) {
-                html5QrCode.stop().catch(err => console.log(err));
-            }
-            document.getElementById('scanner-section').classList.remove('active');
-            document.getElementById('btn-start-scan').style.display = 'block';
-            document.getElementById('load-goods-view').style.display = 'none';
-            document.getElementById('dashboard-main-view').style.display = 'flex';
-        }
-
-        function startScanner() {
-            const section = document.getElementById('scanner-section');
-            section.classList.add('active');
-            document.getElementById('btn-start-scan').style.display = 'none';
-
-            if (!html5QrCode) {
-                html5QrCode = new Html5Qrcode("reader");
-            }
-
-            const config = { fps: 10, qrbox: { width: 220, height: 100 } };
-
-            html5QrCode.start(
-                { facingMode: "environment" }, 
-                config, 
-                onScanSuccess,
-                onScanFailure
-            ).catch(err => {
-                console.error("Fotocamera non disponibile:", err);
-                document.getElementById('reader').innerHTML = "<div style='padding:15px; color:#fff; text-align:center; font-size:0.85rem;'>Fotocamera non disponibile. Simulazione codice attivo.</div>";
-                onScanSuccess("8001505007353");
-            });
-        }
-
-        function onScanSuccess(decodedText) {
-            document.getElementById('detected-code').value = decodedText;
-
-            if(html5QrCode && html5QrCode.isScanning) {
-                html5QrCode.stop().catch(err => console.log(err));
-            }
-
-            processProductLookup(decodedText);
-        }
-
-        function onScanFailure(error) {}
-
-        async function processProductLookup(code) {
-            const descContainer = document.getElementById('desc-container');
-            const imgPreview = document.getElementById('product-img-preview');
-            const noImgPlaceholder = document.getElementById('no-image-placeholder');
-
-            let cleanCode = code.split(' ')[0];
-
-            descContainer.innerHTML = `
-                <label>Descrizione Prodotto:</label>
-                <input type="text" value="Ricerca prodotto in corso..." readonly style="background: #e9ecef; color: #666;">
-            `;
-
-            try {
-                let response = await fetch(`https://world.openfoodfacts.org/api/v0/product/${cleanCode}.json`);
-                let data = await response.json();
-
-                if (data.status === 1) {
-                    let product = data.product;
-                    let productName = product.product_name || "Prodotto senza nome";
-                    let productImg = product.image_front_url || "";
-
-                    descContainer.innerHTML = `
-                        <label>Descrizione Prodotto:</label>
-                        <input type="text" id="manual-desc" value="${productName}" style="background: #e9ecef;">
-                    `;
-
-                    if (productImg) {
-                        imgPreview.src = productImg;
-                        imgPreview.style.display = "block";
-                        noImgPlaceholder.style.display = "none";
-                    } else {
-                        imgPreview.style.display = "none";
-                        noImgPlaceholder.style.display = "flex";
-                        noImgPlaceholder.innerText = "Nessuna immagine";
-                    }
-                } else {
-                    descContainer.innerHTML = `
-                        <label style="color: #d32f2f;">Descrizione non disponibile (fai tu):</label>
-                        <input type="text" id="manual-desc" placeholder="Inserisci nome prodotto...">
-                    `;
-                    imgPreview.style.display = "none";
-                    noImgPlaceholder.style.display = "flex";
-                    noImgPlaceholder.innerText = "Nessuna immagine";
-                }
-            } catch (error) {
-                console.error("Errore di connessione API:", error);
-                descContainer.innerHTML = `
-                    <label style="color: #d32f2f;">Errore rete (fai tu):</label>
-                    <input type="text" id="manual-desc" placeholder="Inserisci nome prodotto...">
-                `;
-                imgPreview.style.display = "none";
-                noImgPlaceholder.style.display = "flex";
-                noImgPlaceholder.innerText = "Nessuna immagine";
-            }
-        }
-
-        function saveProduct(type) {
-            if (type === 'tassativa') {
-                document.getElementById('bulb-red').style.backgroundColor = '#d32f2f';
-                document.getElementById('bulb-red').style.boxShadow = '0 0 12px #d32f2f';
-                alert('Prodotto salvato con scadenza Tassativa (Semaforo Rosso attivato)');
-            } else {
-                document.getElementById('bulb-yellow').style.backgroundColor = '#fbc02d';
-                document.getElementById('bulb-yellow').style.boxShadow = '0 0 12px #fbc02d';
-                alert('Prodotto salvato con scadenza Consigliata (Semaforo Giallo attivato)');
-            }
-            closeLoadGoods();
-        }
-
-        function toggleMenu() {
-            alert('Menu principale');
-        }
-    </script>
 </body>
 </html>

@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EatMeFirst - Categorie</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body.page-categoria-body {
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            background-image: url('ripostiglio.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            position: relative;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 25px;
+        }
+
+        .top-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .top-logo-container h1 {
+            color: #ffffff;
+            font-size: 2.4rem;
+            text-shadow: 0 3px 8px rgba(0,0,0,0.8);
+            letter-spacing: 1.5px;
+        }
+
+        .btn-back {
+            background-color: rgba(255, 255, 255, 0.92);
+            color: #333;
+            padding: 10px 18px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transition: background 0.2s;
+        }
+        .btn-back:hover {
+            background-color: #ffffff;
+        }
+
+        .categoria-main-content {
+            width: 100%;
+            max-width: 950px;
+            margin: 20px auto;
+            background: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(6px);
+            padding: 25px;
+            border-radius: 14px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            color: #1e293b;
+            margin-bottom: 15px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 15px;
+            max-height: 280px;
+            overflow-y: auto;
+            padding: 5px;
+        }
+
+        .cat-card {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 22px 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cat-card:hover {
+            border-color: #2b7a78;
+            background: #f1f5f9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .cat-name {
+            font-size: 1rem;
+            font-weight: bold;
+            color: #1e293b;
+            word-break: break-word;
+        }
+
+        .filtered-products-container {
+            display: none;
+            margin-top: 20px;
+            border-top: 2px dashed #cbd5e1;
+            padding-top: 15px;
+        }
+
+        .filtered-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .filtered-title {
+            font-size: 1.05rem;
+            font-weight: bold;
+            color: #2b7a78;
+        }
+
+        .close-filter-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 4px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .product-list-box {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            max-height: 180px;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .bottom-info-panel {
+            width: 100%;
+            max-width: 950px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(6px);
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+        .bottom-info-text {
+            font-size: 0.95rem;
+            color: #1e293b;
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .top-header {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+            .categories-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body class="page-categoria-body">
+
+    <div class="top-header">
+        <div class="top-logo-container">
+            <h1>EatMeFirst - Categorie</h1>
+        </div>
+        <a href="dispensa.html" class="btn-back">⬅ Torna alla Dispensa</a>
+    </div>
+
+    <div class="categoria-main-content">
+        <div class="section-title">Categorie merceologiche attive</div>
+        
+        <!-- La griglia si popolerà automaticamente con le categorie reali dei prodotti caricati -->
+        <div class="categories-grid" id="categories-grid">
+            <div style="grid-column: 1 / -1; text-align: center; color: #64748b; padding: 20px; font-size: 0.95rem;">
+                Nessuna categoria registrata. I settori compariranno qui automaticamente man mano che caricherai i prodotti.
+            </div>
+        </div>
+
+        <div class="filtered-products-container" id="filtered-box">
+            <div class="filtered-header">
+                <span class="filtered-title" id="filtered-title-text">Categoria: --</span>
+                <button class="close-filter-btn" onclick="closeFilter()">✖ Chiudi</button>
+            </div>
+            <div class="product-list-box" id="product-list-box">
+                <!-- I prodotti reali compariranno qui al click sulla categoria -->
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-info-panel">
+        <p class="bottom-info-text">Seleziona una categoria per visualizzare l'elenco dei prodotti corrispondenti.</p>
+    </div>
+
+    <script>
+        function loadCategoryProducts(catName) {
+            document.getElementById('filtered-box').style.display = 'block';
+            document.getElementById('filtered-title-text').innerHTML = `Categoria: <strong>${catName}</strong>`;
+            let listBox = document.getElementById('product-list-box');
+            listBox.innerHTML = `<div style="text-align: center; color: #64748b; padding: 15px;">Nessun prodotto registrato in questa categoria.</div>`;
+        }
+
+        function closeFilter() {
+            document.getElementById('filtered-box').style.display = 'none';
+        }
+
+        // Funzione di servizio pronta per quando collegheremo il modulo di carico prodotti
+        function registerCategory(catName) {
+            catName = catName.trim();
+            if (catName.length > 25) {
+                catName = catName.substring(0, 25);
+            }
+            
+            let grid = document.getElementById('categories-grid');
+            
+            // Rimuove il messaggio di "nessuna categoria" se presente
+            if (grid.querySelector('div[style*="grid-column"]')) {
+                grid.innerHTML = '';
+            }
+
+            // Verifica se esiste già per evitare doppioni
+            let existingCards = grid.querySelectorAll('.cat-name');
+            let exists = Array.from(existingCards).some(card => card.textContent.toLowerCase() === catName.toLowerCase());
+
+            if (!exists && catName !== "") {
+                let newCard = document.createElement('div');
+                newCard.className = 'cat-card';
+                newCard.setAttribute('onclick', `loadCategoryProducts('${catName}')`);
+                newCard.innerHTML = `<div class="cat-name">${catName}</div>`;
+                grid.appendChild(newCard);
+            }
+        }
+    </script>
+</body>
+</html>
